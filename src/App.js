@@ -5,6 +5,7 @@ import './App.css'
 function App() {
   const [inputText, setInputText] = useState('')
   const [summary, setSummary] = useState('')
+  const [keyThemes, setKeyThemes] = useState([])
   const [isRecording, setIsRecording] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
   const mediaRecorderRef = useRef(null)
@@ -70,8 +71,11 @@ function App() {
       
       if (transcription.text) {
         setInputText(transcription.text)
-        // After successful transcription, generate a summary
-        await generateSummary(transcription.text, openai)
+        // After successful transcription, generate a summary and key themes
+        await Promise.all([
+          generateSummary(transcription.text, openai),
+          generateKeyThemes(transcription.text, openai)
+        ])
       }
     } catch (error) {
       console.error('Error transcribing audio:', error)
@@ -116,8 +120,63 @@ function App() {
       setIsProcessing(false)
     }
   }
+
+  const generateKeyThemes = async (text, openai) => {
+    if (!text || text.trim().length === 0) {
+      setKeyThemes([])
+      return
+    }
+    
+    try {
+      setIsProcessing(true)
+      
+      const completion = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo",
+        messages: [
+          { 
+            role: "system", 
+            content: "You are a helpful therapist that identifies key emotional themes from someone's personal reflection. Extract 3-5 key themes as single words or short phrases (2-3 words maximum per theme)."
+          },
+          { 
+            role: "user", 
+            content: `Identify key themes from this text: ${text}`
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 100
+      })
+      
+      if (completion.choices && completion.choices.length > 0) {
+        const themesText = completion.choices[0].message.content
+        // Parse the themes from the response - assuming they could be in different formats
+        let themes = []
+        
+        // Try to parse as a list with bullet points, numbers, or just lines
+        const listMatch = themesText.match(/[•\-\*\d][\s\.]+(.*?)(?=\n|$)/g)
+        if (listMatch) {
+          themes = listMatch.map(item => item.replace(/^[•\-\*\d][\s\.]+/, '').trim())
+        } else {
+          // If not a list, split by commas or newlines
+          themes = themesText.split(/[,\n]+/).map(item => item.trim())
+          .filter(item => item && !item.startsWith('Themes:') && !item.startsWith('Key themes:'))
+        }
+        
+        // Clean up any remaining punctuation and filter empty items
+        themes = themes.map(theme => theme.replace(/[":;.]/g, '').trim())
+          .filter(theme => theme.length > 0)
+          .slice(0, 5) // Limit to 5 themes max
+        
+        setKeyThemes(themes)
+      }
+    } catch (error) {
+      console.error('Error generating key themes:', error)
+      setKeyThemes([])
+    } finally {
+      setIsProcessing(false)
+    }
+  }
   
-  const handleSummarize = async () => {
+  const handleAnalyze = async () => {
     const apiKey = process.env.REACT_APP_OPENAI_API_KEY
     
     if (!inputText || inputText.trim().length === 0) {
@@ -126,14 +185,20 @@ function App() {
     }
     
     try {
+      setIsProcessing(true)
       const openai = new OpenAI({
         apiKey: apiKey,
         dangerouslyAllowBrowser: true
       })
       
-      await generateSummary(inputText, openai)
+      await Promise.all([
+        generateSummary(inputText, openai),
+        generateKeyThemes(inputText, openai)
+      ])
     } catch (error) {
-      console.error('Error in handleSummarize:', error)
+      console.error('Error in handleAnalyze:', error)
+    } finally {
+      setIsProcessing(false)
     }
   }
 
@@ -159,23 +224,46 @@ function App() {
               {isRecording ? 'Stop Recording' : 'Start Recording'}
             </button>
             <button 
-              onClick={handleSummarize}
+              onClick={handleAnalyze}
               disabled={isProcessing || !inputText}
               className="summarize-button"
             >
-              Summarize Text
+              Analyze Text
             </button>
             {isRecording && <div className="recording-indicator">Recording...</div>}
             {isProcessing && <div className="processing-indicator">Processing...</div>}
           </div>
         </div>
         
-        {summary && (
-          <div className="summary-container">
-            <h3>Summary</h3>
-            <div className="summary-text">
-              {summary}
-            </div>
+        {(summary || keyThemes.length > 0) && (
+          <div className="ai-insights">
+            {summary && (
+              <div className="summary-container">
+                <div className="insight-header">
+                  <span className="insight-icon">👁️</span>
+                  <h3>Summary</h3>
+                </div>
+                <div className="summary-text">
+                  {summary}
+                </div>
+              </div>
+            )}
+            
+            {keyThemes.length > 0 && (
+              <div className="themes-container">
+                <div className="insight-header">
+                  <span className="insight-icon">📊</span>
+                  <h3>Key Themes</h3>
+                </div>
+                <div className="themes-tags">
+                  {keyThemes.map((theme, index) => (
+                    <span key={index} className="theme-tag">
+                      {theme}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
