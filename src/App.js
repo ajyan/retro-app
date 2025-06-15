@@ -1,6 +1,7 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { OpenAI } from 'openai'
 import './App.css'
+import questions from './questions.json'
 
 function App() {
   const [inputText, setInputText] = useState('')
@@ -8,8 +9,19 @@ function App() {
   const [keyThemes, setKeyThemes] = useState([])
   const [isRecording, setIsRecording] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
+  const [currentQuestion, setCurrentQuestion] = useState('')
   const mediaRecorderRef = useRef(null)
   const chunksRef = useRef([])
+
+  // Select a random question when the component mounts
+  useEffect(() => {
+    selectRandomQuestion()
+  }, [])
+
+  const selectRandomQuestion = () => {
+    const randomIndex = Math.floor(Math.random() * questions.length)
+    setCurrentQuestion(questions[randomIndex].question)
+  }
 
   const handleTextChange = (e) => {
     setInputText(e.target.value)
@@ -152,9 +164,11 @@ function App() {
         let themes = []
         
         // Try to parse as a list with bullet points, numbers, or just lines
-        const listMatch = themesText.match(/[•\-\*\d][\s\.]+(.*?)(?=\n|$)/g)
+        // eslint-disable-next-line
+        const listMatch = themesText.match(/[•\-*\d][\s\.]+(.*?)(?=\n|$)/g)
         if (listMatch) {
-          themes = listMatch.map(item => item.replace(/^[•\-\*\d][\s\.]+/, '').trim())
+          // eslint-disable-next-line
+          themes = listMatch.map(item => item.replace(/^[•\-*\d][\s\.]+/, '').trim())
         } else {
           // If not a list, split by commas or newlines
           themes = themesText.split(/[,\n]+/).map(item => item.trim())
@@ -202,10 +216,17 @@ function App() {
     }
   }
 
+  const handleNewQuestion = () => {
+    selectRandomQuestion()
+    setInputText('')
+    setSummary('')
+    setKeyThemes([])
+  }
+
   return (
     <div className="App">
       <div className="voice-input-container">
-        <h2>Voice or Text Input</h2>
+        <h2 className="reflection-question">{currentQuestion}</h2>
         
         <div className="input-area">
           <textarea
@@ -229,6 +250,13 @@ function App() {
               className="summarize-button"
             >
               Analyze Text
+            </button>
+            <button
+              onClick={handleNewQuestion}
+              className="new-question-button"
+              disabled={isProcessing}
+            >
+              New Question
             </button>
             {isRecording && <div className="recording-indicator">Recording...</div>}
             {isProcessing && <div className="processing-indicator">Processing...</div>}
