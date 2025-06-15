@@ -147,7 +147,7 @@ function App() {
         messages: [
           { 
             role: "system", 
-            content: "You are a helpful therapist that identifies key emotional themes from someone's personal reflection. Extract 3-5 key themes as single words or short phrases (2-3 words maximum per theme)."
+            content: "You are a relationship therapist that identifies key emotional themes from someone's personal reflection. Extract 3-5 key themes as single words or short phrases (2-3 words maximum per theme)."
           },
           { 
             role: "user", 
