@@ -178,7 +178,7 @@ export default function useAudioRecording() {
     try {
       setIsProcessing(true);
       const openai = new OpenAI({
-        apiKey: process.env.REACT_APP_OPENAI_API_KEY,
+        apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
         dangerouslyAllowBrowser: true
       });
       
@@ -206,7 +206,7 @@ export default function useAudioRecording() {
       const audioFile = new File([audioBlob], 'recording.webm', { type: 'audio/webm' });
       
       const openai = new OpenAI({
-        apiKey: process.env.REACT_APP_OPENAI_API_KEY,
+        apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
         dangerouslyAllowBrowser: true
       });
       

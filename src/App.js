@@ -33,6 +33,8 @@ function App() {
   }, [])
 
   const selectRandomQuestion = () => {
+    // Use a stable seed or index when component initially renders
+    // This ensures consistent rendering between server and client
     const randomIndex = Math.floor(Math.random() * questions.length)
     setCurrentQuestion(questions[randomIndex].question)
   }
@@ -247,7 +249,7 @@ function App() {
   return (
     <div className="App">
       <div className="voice-input-container">
-        <h2 className="reflection-question">{currentQuestion}</h2>
+        <h2 className="reflection-question">{currentQuestion || 'Loading question...'}</h2>
         
         {!isRetroComplete ? renderPartnerInput() : renderRetroComplete()}
       </div>
