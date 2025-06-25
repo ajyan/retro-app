@@ -1,9 +1,13 @@
 import React from "react"
 
-function Card({ className = "", children, ...props }) {
+function Card({ className = "", children, variant = "default", ...props }) {
+  const baseClasses = variant === "question" 
+    ? "question-card" 
+    : "retro-card";
+    
   return (
     <div
-      className={`rounded-lg border bg-card text-card-foreground shadow-sm ${className}`}
+      className={`${baseClasses} text-card-foreground smooth-transition ${className}`}
       {...props}
     >
       {children}
@@ -14,7 +18,7 @@ function Card({ className = "", children, ...props }) {
 function CardHeader({ className = "", children, ...props }) {
   return (
     <div
-      className={`flex flex-col space-y-1.5 p-6 ${className}`}
+      className={`flex flex-col space-y-3 p-6 ${className}`}
       {...props}
     >
       {children}
@@ -25,7 +29,7 @@ function CardHeader({ className = "", children, ...props }) {
 function CardTitle({ className = "", children, ...props }) {
   return (
     <h3
-      className={`text-2xl font-semibold leading-none tracking-tight ${className}`}
+      className={`text-2xl font-semibold leading-tight tracking-tight text-card-foreground/90 ${className}`}
       {...props}
     >
       {children}

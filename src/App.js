@@ -88,10 +88,13 @@ function App() {
     
     return (
       <div className="w-full space-y-4">
-        <div className="text-center">
-          <h3 className="text-xl font-medium text-primary">
+        <div className="text-center mb-8 pt-2">
+          <h3 className="text-2xl font-semibold text-primary/90 mb-3">
             Partner {currentPartner}'s Response
           </h3>
+          <p className="text-muted-foreground">
+            Share your thoughts by typing or recording your voice
+          </p>
         </div>
         
         <div className="space-y-4">
@@ -106,34 +109,37 @@ function App() {
             <Button 
               onClick={isRecording ? handleStopRecordingClick : handleStartRecordingClick}
               variant={isRecording ? "destructive" : "default"}
+              isRecording={isRecording}
               disabled={isProcessing}
-              className="relative"
+              size="lg"
             >
-              {isRecording ? 'Stop Recording' : 'Start Recording'}
-              {isRecording && (
-                <span className="absolute -top-2 -right-2 h-3 w-3 rounded-full bg-red-500 animate-pulse"></span>
-              )}
+              {isRecording ? '🛑 Stop Recording' : '🎤 Start Recording'}
             </Button>
             
             <Button 
               onClick={handleAnalyzeTextClick}
               variant="secondary"
               disabled={isProcessing || !inputText}
+              size="lg"
             >
-              Analyze Text
+              ✨ Analyze Text
             </Button>
             
             <Button
               onClick={handleSubmit}
               variant="outline"
               disabled={isProcessing || !inputText}
+              size="lg"
             >
-              {currentPartner === 'A' ? 'Next: Partner B' : 'Complete Retro'}
+              {currentPartner === 'A' ? '➡️ Next: Partner B' : '🎉 Complete Retro'}
             </Button>
             
             {isProcessing && (
-              <div className="w-full text-center text-sm text-muted-foreground animate-pulse">
-                Processing...
+              <div className="w-full text-center">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/20 text-accent-foreground">
+                  <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full"></div>
+                  <span className="text-sm font-medium">Processing your response...</span>
+                </div>
               </div>
             )}
           </div>
@@ -192,8 +198,8 @@ function App() {
       <div className="w-full space-y-6">
         <div className="grid gap-6 md:grid-cols-2">
           <Card>
-            <CardHeader>
-              <CardTitle>Partner A's Insights</CardTitle>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-xl">Partner A's Insights</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {summaryA && (
@@ -225,8 +231,8 @@ function App() {
           </Card>
           
           <Card>
-            <CardHeader>
-              <CardTitle>Partner B's Insights</CardTitle>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-xl">Partner B's Insights</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {summaryB && (
@@ -273,16 +279,23 @@ function App() {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-3xl shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-center text-xl md:text-2xl italic text-primary">
-            {currentQuestion || 'Loading question...'}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {!isRetroComplete ? renderPartnerInput() : renderRetroComplete()}
-        </CardContent>
-      </Card>
+      <div className="w-full max-w-4xl space-y-6">
+        {/* Beautiful question card */}
+        <Card variant="question" className="text-center">
+          <CardHeader className="pb-8">
+            <CardTitle className="text-2xl md:text-3xl leading-relaxed text-primary/90 font-medium">
+              {currentQuestion || 'Loading your reflection question...'}
+            </CardTitle>
+          </CardHeader>
+        </Card>
+        
+        {/* Main content card */}
+        <Card className="shadow-xl">
+          <CardContent className="p-8">
+            {!isRetroComplete ? renderPartnerInput() : renderRetroComplete()}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }

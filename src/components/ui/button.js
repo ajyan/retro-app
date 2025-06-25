@@ -4,28 +4,27 @@ function Button({
   className = "", 
   variant = "default", 
   size = "default", 
+  isRecording = false,
   children,
   ...props 
 }) {
-  const baseStyles = "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-  
   const variantStyles = {
-    default: "bg-primary text-primary-foreground hover:bg-primary/90",
-    destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-    outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
-    secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-    ghost: "hover:bg-accent hover:text-accent-foreground",
-    link: "text-primary underline-offset-4 hover:underline",
+    default: "retro-button",
+    destructive: `retro-button ${isRecording ? 'recording-pulse' : ''}`,
+    outline: "bg-card border-2 border-primary/40 text-primary hover:bg-primary hover:text-primary-foreground rounded-xl px-6 py-3 font-medium smooth-transition shadow-md hover:shadow-lg hover:border-primary",
+    secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-xl px-6 py-3 font-medium smooth-transition shadow-md hover:shadow-lg",
+    ghost: "hover:bg-accent/20 hover:text-accent-foreground rounded-xl px-4 py-2 smooth-transition",
+    link: "text-primary underline-offset-4 hover:underline smooth-transition",
   }
   
   const sizeStyles = {
-    default: "h-10 px-4 py-2",
-    sm: "h-9 rounded-md px-3",
-    lg: "h-11 rounded-md px-8",
-    icon: "h-10 w-10",
+    default: "",
+    sm: "px-4 py-2 text-sm",
+    lg: "px-8 py-4 text-lg",
+    icon: "w-12 h-12 rounded-full p-0",
   }
   
-  const classes = `${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`
+  const classes = `inline-flex items-center justify-center font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${variantStyles[variant]} ${sizeStyles[size]} ${className}`
   
   return (
     <button className={classes} {...props}>

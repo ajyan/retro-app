@@ -4,65 +4,79 @@
 
 @layer base {
   :root {
-    --background: 180 30% 96%;
-    --foreground: 200 30% 20%;
+    /* Soft lavender-cream background */
+    --background: 320 20% 97%;
+    --foreground: 260 15% 25%;
     
-    --card: 180 30% 96%;
-    --card-foreground: 200 30% 20%;
+    /* Pure white cards */
+    --card: 0 0% 100%;
+    --card-foreground: 260 15% 25%;
     
-    --popover: 180 30% 96%;
-    --popover-foreground: 200 30% 20%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 260 15% 25%;
     
-    --primary: 170 70% 60%;
-    --primary-foreground: 200 30% 98%;
+    /* Beautiful rose-pink primary */
+    --primary: 340 75% 65%;
+    --primary-foreground: 0 0% 100%;
     
-    --secondary: 210 40% 90%;
-    --secondary-foreground: 210 40% 30%;
+    /* Soft lavender secondary */
+    --secondary: 280 30% 92%;
+    --secondary-foreground: 280 40% 40%;
     
-    --muted: 210 30% 90%;
-    --muted-foreground: 200 30% 50%;
+    /* Light muted tones */
+    --muted: 320 15% 94%;
+    --muted-foreground: 260 10% 55%;
     
-    --accent: 340 70% 85%;
-    --accent-foreground: 340 50% 30%;
+    /* Gentle purple accent */
+    --accent: 280 40% 85%;
+    --accent-foreground: 280 60% 35%;
     
-    --destructive: 0 70% 70%;
+    --destructive: 0 70% 65%;
     --destructive-foreground: 0 0% 100%;
     
-    --border: 180 30% 85%;
-    --input: 180 30% 85%;
-    --ring: 170 70% 60%;
+    /* Soft borders */
+    --border: 320 15% 88%;
+    --input: 320 10% 96%;
+    --ring: 340 75% 65%;
     
-    --radius: 0.75rem;
+    --radius: 0.875rem;
   }
  
   .dark {
-    --background: 200 30% 15%;
-    --foreground: 180 20% 95%;
+    /* Deep purple-blue background */
+    --background: 260 25% 8%;
+    --foreground: 0 0% 95%;
     
-    --card: 200 30% 15%;
-    --card-foreground: 180 20% 95%;
+    /* Dark cards */
+    --card: 260 20% 12%;
+    --card-foreground: 0 0% 95%;
     
-    --popover: 200 30% 15%;
-    --popover-foreground: 180 20% 95%;
+    --popover: 260 20% 12%;
+    --popover-foreground: 0 0% 95%;
     
-    --primary: 170 60% 50%;
+    /* Bright rose-pink for dark mode */
+    --primary: 340 80% 70%;
     --primary-foreground: 0 0% 100%;
     
-    --secondary: 210 30% 25%;
-    --secondary-foreground: 210 20% 90%;
+    /* Dark purple secondary */
+    --secondary: 280 20% 18%;
+    --secondary-foreground: 0 0% 90%;
     
-    --muted: 210 30% 25%;
-    --muted-foreground: 200 20% 70%;
+    /* Dark muted */
+    --muted: 260 15% 18%;
+    --muted-foreground: 0 0% 70%;
     
-    --accent: 340 50% 40%;
-    --accent-foreground: 0 0% 100%;
+    /* Purple accent for dark */
+    --accent: 280 45% 45%;
+    --accent-foreground: 0 0% 95%;
     
-    --destructive: 0 60% 60%;
+    --destructive: 0 70% 65%;
     --destructive-foreground: 0 0% 100%;
     
-    --border: 200 30% 25%;
-    --input: 200 30% 25%;
-    --ring: 170 60% 50%;
+    /* Dark borders */
+    --border: 260 15% 20%;
+    --input: 260 15% 16%;
+    --ring: 340 80% 70%;
   }
 }
 
@@ -76,9 +90,77 @@
     font-family: "Inter", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
       'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
       sans-serif;
+    background-image: 
+      radial-gradient(circle at 20% 20%, hsl(var(--primary)/0.03) 1px, transparent 1px),
+      radial-gradient(circle at 80% 80%, hsl(var(--accent)/0.02) 1px, transparent 1px);
+    background-size: 80px 80px;
   }
   
   .loading {
     @apply flex justify-center items-center h-screen text-xl text-foreground text-center p-5;
+  }
+}
+
+@layer components {
+  /* Beautiful consistent card styling */
+  .retro-card {
+    @apply bg-card border border-border/30 rounded-2xl shadow-lg;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .retro-card:hover {
+    @apply shadow-xl border-primary/30;
+    transform: translateY(-2px);
+  }
+  
+  /* Question card - same as regular cards */
+  .question-card {
+    @apply bg-card border border-primary/20 rounded-2xl shadow-lg p-8 text-center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .question-card:hover {
+    @apply shadow-xl border-primary/30;
+    transform: translateY(-2px);
+  }
+  
+  /* Beautiful button styling */
+  .retro-button {
+    @apply bg-primary text-primary-foreground rounded-xl px-6 py-3 font-medium;
+    @apply transition-all duration-300 ease-out;
+    @apply shadow-md hover:shadow-lg active:scale-95;
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary)/0.85));
+  }
+  
+  .retro-button:hover {
+    transform: translateY(-1px);
+    background: linear-gradient(135deg, hsl(var(--primary)/0.9), hsl(var(--primary)/0.75));
+  }
+  
+  /* Recording button with pulse animation */
+  .recording-pulse {
+    animation: pulse-warm 2s infinite;
+  }
+  
+  @keyframes pulse-warm {
+    0%, 100% {
+      box-shadow: 0 0 0 0 hsl(var(--destructive)/0.7);
+    }
+    50% {
+      box-shadow: 0 0 0 10px hsl(var(--destructive)/0);
+    }
+  }
+  
+  /* Beautiful input styling */
+  .retro-input {
+    @apply bg-card border border-border/40 rounded-xl px-4 py-3;
+    @apply focus:ring-2 focus:ring-primary/30 focus:border-primary/60;
+    @apply transition-all duration-200;
+    @apply shadow-sm focus:shadow-md;
+  }
+  
+  /* Smooth transitions for all interactive elements */
+  .smooth-transition {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 } 
