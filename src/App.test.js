@@ -170,10 +170,10 @@ describe('Retro App Tests', () => {
     await waitFor(() => {
       // Check for the Start New Retro button which only appears on the final summary page
       expect(screen.getByRole('button', { name: /Start New Retro/i })).toBeInTheDocument();
-      
-      // Check for both partner insights headers
-      expect(screen.getByText(/Partner A's Insights/i)).toBeInTheDocument();
-      expect(screen.getByText(/Partner B's Insights/i)).toBeInTheDocument();
     });
+    
+    // Check for both partner insights headers
+    expect(screen.getByText(/Partner A's Insights/i)).toBeInTheDocument();
+    expect(screen.getByText(/Partner B's Insights/i)).toBeInTheDocument();
   });
 });
