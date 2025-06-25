@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react'
-import './App.css'
+// No need to import CSS here as it's imported in app/layout.js
 import questions from './questions.json'
 import useAudioRecording from './hooks/useAudioRecording'
+
+import { Button } from "./components/ui/button"
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "./components/ui/card"
+import { Textarea } from "./components/ui/textarea"
+import { Badge } from "./components/ui/badge"
 
 function App() {
   // Shared state
@@ -82,43 +87,55 @@ function App() {
     const inputText = currentPartner === 'A' ? inputTextA : inputTextB
     
     return (
-      <div className="partner-section">
-        <div className="partner-header">
-          <h3>Partner {currentPartner}'s Response</h3>
+      <div className="w-full space-y-4">
+        <div className="text-center">
+          <h3 className="text-xl font-medium text-primary">
+            Partner {currentPartner}'s Response
+          </h3>
         </div>
         
-        <div className="input-area">
-          <textarea
+        <div className="space-y-4">
+          <Textarea
             value={inputText}
             onChange={handleInputChange}
             placeholder="Share your thoughts or click 'Start Recording' to speak..."
-            rows={5}
+            className="min-h-[120px] text-base"
           />
           
-          <div className="voice-controls">
-            <button 
+          <div className="flex flex-wrap gap-3 justify-center">
+            <Button 
               onClick={isRecording ? handleStopRecordingClick : handleStartRecordingClick}
-              className={isRecording ? 'recording' : ''}
+              variant={isRecording ? "destructive" : "default"}
               disabled={isProcessing}
+              className="relative"
             >
               {isRecording ? 'Stop Recording' : 'Start Recording'}
-            </button>
-            <button 
+              {isRecording && (
+                <span className="absolute -top-2 -right-2 h-3 w-3 rounded-full bg-red-500 animate-pulse"></span>
+              )}
+            </Button>
+            
+            <Button 
               onClick={handleAnalyzeTextClick}
+              variant="secondary"
               disabled={isProcessing || !inputText}
-              className="summarize-button"
             >
               Analyze Text
-            </button>
-            <button
+            </Button>
+            
+            <Button
               onClick={handleSubmit}
-              className="submit-button"
+              variant="outline"
               disabled={isProcessing || !inputText}
             >
               {currentPartner === 'A' ? 'Next: Partner B' : 'Complete Retro'}
-            </button>
-            {isRecording && <div className="recording-indicator">Recording...</div>}
-            {isProcessing && <div className="processing-indicator">Processing...</div>}
+            </Button>
+            
+            {isProcessing && (
+              <div className="w-full text-center text-sm text-muted-foreground animate-pulse">
+                Processing...
+              </div>
+            )}
           </div>
         </div>
         
@@ -132,33 +149,39 @@ function App() {
     const keyThemes = currentPartner === 'A' ? keyThemesA : keyThemesB
     
     return (summary || keyThemes.length > 0) && (
-      <div className="ai-insights">
+      <div className="space-y-6 mt-6">
         {summary && (
-          <div className="summary-container">
-            <div className="insight-header">
-              <span className="insight-icon" aria-hidden="true">👁️</span>
-              <h3>Summary</h3>
-            </div>
-            <div className="summary-text">
-              {summary}
-            </div>
-          </div>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <span className="text-primary">👁️</span>
+                Summary
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>{summary}</p>
+            </CardContent>
+          </Card>
         )}
         
         {keyThemes.length > 0 && (
-          <div className="themes-container">
-            <div className="insight-header">
-              <span className="insight-icon" aria-hidden="true">📊</span>
-              <h3>Key Themes</h3>
-            </div>
-            <div className="themes-tags">
-              {keyThemes.map((theme, index) => (
-                <span key={index} className="theme-tag">
-                  {theme}
-                </span>
-              ))}
-            </div>
-          </div>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <span className="text-primary">📊</span>
+                Key Themes
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-2">
+                {keyThemes.map((theme, index) => (
+                  <Badge key={index} variant="secondary">
+                    {theme}
+                  </Badge>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         )}
       </div>
     )
@@ -166,93 +189,100 @@ function App() {
 
   const renderRetroComplete = () => {
     return (
-      <div className="retro-complete">
-        
-        <div className="partner-responses">
-          <div className="partner-response">
-            <h3>Partner A's Insights</h3>
-            <div className="ai-insights">
+      <div className="w-full space-y-6">
+        <div className="grid gap-6 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Partner A's Insights</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
               {summaryA && (
-                <div className="summary-container">
-                  <div className="insight-header">
-                    <span className="insight-icon" aria-hidden="true">👁️</span>
-                    <h3>Summary</h3>
-                  </div>
-                  <div className="summary-text">
-                    {summaryA}
-                  </div>
+                <div>
+                  <h4 className="text-sm font-medium text-primary flex items-center gap-2 mb-2">
+                    <span>👁️</span>
+                    Summary
+                  </h4>
+                  <p className="text-sm">{summaryA}</p>
                 </div>
               )}
               
               {keyThemesA.length > 0 && (
-                <div className="themes-container">
-                  <div className="insight-header">
-                    <span className="insight-icon" aria-hidden="true">📊</span>
-                    <h3>Key Themes</h3>
-                  </div>
-                  <div className="themes-tags">
+                <div>
+                  <h4 className="text-sm font-medium text-primary flex items-center gap-2 mb-2">
+                    <span>📊</span>
+                    Key Themes
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
                     {keyThemesA.map((theme, index) => (
-                      <span key={index} className="theme-tag">
+                      <Badge key={index} variant="secondary">
                         {theme}
-                      </span>
+                      </Badge>
                     ))}
                   </div>
                 </div>
               )}
-            </div>
-          </div>
+            </CardContent>
+          </Card>
           
-          <div className="partner-response">
-            <h3>Partner B's Insights</h3>
-            <div className="ai-insights">
+          <Card>
+            <CardHeader>
+              <CardTitle>Partner B's Insights</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
               {summaryB && (
-                <div className="summary-container">
-                  <div className="insight-header">
-                    <span className="insight-icon" aria-hidden="true">👁️</span>
-                    <h3>Summary</h3>
-                  </div>
-                  <div className="summary-text">
-                    {summaryB}
-                  </div>
+                <div>
+                  <h4 className="text-sm font-medium text-primary flex items-center gap-2 mb-2">
+                    <span>👁️</span>
+                    Summary
+                  </h4>
+                  <p className="text-sm">{summaryB}</p>
                 </div>
               )}
               
               {keyThemesB.length > 0 && (
-                <div className="themes-container">
-                  <div className="insight-header">
-                    <span className="insight-icon" aria-hidden="true">📊</span>
-                    <h3>Key Themes</h3>
-                  </div>
-                  <div className="themes-tags">
+                <div>
+                  <h4 className="text-sm font-medium text-primary flex items-center gap-2 mb-2">
+                    <span>📊</span>
+                    Key Themes
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
                     {keyThemesB.map((theme, index) => (
-                      <span key={index} className="theme-tag">
+                      <Badge key={index} variant="secondary">
                         {theme}
-                      </span>
+                      </Badge>
                     ))}
                   </div>
                 </div>
               )}
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
         
-        <button
-          onClick={handleNewQuestion}
-          className="new-question-button"
-        >
-          Start New Retro
-        </button>
+        <div className="flex justify-center">
+          <Button
+            onClick={handleNewQuestion}
+            variant="default"
+            size="lg"
+          >
+            Start New Retro
+          </Button>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="App">
-      <div className="voice-input-container">
-        <h2 className="reflection-question">{currentQuestion || 'Loading question...'}</h2>
-        
-        {!isRetroComplete ? renderPartnerInput() : renderRetroComplete()}
-      </div>
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <Card className="w-full max-w-3xl shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-center text-xl md:text-2xl italic text-primary">
+            {currentQuestion || 'Loading question...'}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {!isRetroComplete ? renderPartnerInput() : renderRetroComplete()}
+        </CardContent>
+      </Card>
     </div>
   )
 }
